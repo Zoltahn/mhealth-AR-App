@@ -10,38 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
         <activity
-            android:name=".SettingActivity"
-            android:exported="true"
-            android:label="Settings"/>
-        <activity
-            android:name=".AnalysingActivity"
-            android:exported="true"
-            android:label="Analysis" />
-        <activity
-            android:name=".LyingActivity"
-            android:exported="true"
-            android:label="Lying Down" />
-        <activity
-            android:name=".RunActivity"
-            android:exported="true"
-            android:label="Running" />
-        <activity
-            android:name=".WalkActivity"
-            android:exported="true"
-            android:label="Walking" />
-        <activity
-            android:name=".SitActivity"
-            android:exported="true"
-            android:label="Sitting" />
-        <activity
-            android:name=".StandActivity"
-
-            android:exported="true"
-            android:label="Standing" />
-        <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="Main View">
+            android:label="mHealth">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.view.View;
 import android.widget.Button;
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         buttonMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                Intent intent = new Intent(MainActivity.this, MainActivity.class);
                 startActivity(intent);
                 finish();
             }
@@ -48,9 +49,11 @@ public class MainActivity extends AppCompatActivity {
         buttonAnalysis.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), AnalysingActivity.class);
-                startActivity(intent);
-                finish();
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                AnalysisMenu analysisMenu = new AnalysisMenu();
+                transaction.replace(R.id.linearLayout1, analysisMenu);
+                transaction.addToBackStack(null);
+                transaction.commit();
             }
         });
 
@@ -58,8 +61,11 @@ public class MainActivity extends AppCompatActivity {
         buttonSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), SettingActivity.class);
-                startActivity(intent);
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                SettingMenu settingMenu = new SettingMenu();
+                transaction.replace(R.id.linearLayout1, settingMenu);
+                transaction.addToBackStack(null);
+                transaction.commit();
             }
         });
 
@@ -67,9 +73,11 @@ public class MainActivity extends AppCompatActivity {
         buttonStand.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), StandActivity.class);
-                startActivity(intent);
-                finish();
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                StandActivity standActivity = new StandActivity();
+                transaction.replace(R.id.linearLayout1, standActivity);
+                transaction.addToBackStack(null);
+                transaction.commit();
             }
         });
 
@@ -77,9 +85,11 @@ public class MainActivity extends AppCompatActivity {
         buttonSit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), SitActivity.class);
-                startActivity(intent);
-                finish();
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                SitActivity sitActivity = new SitActivity();
+                transaction.replace(R.id.linearLayout1, sitActivity);
+                transaction.addToBackStack(null);
+                transaction.commit();
             }
         });
 
@@ -87,9 +97,11 @@ public class MainActivity extends AppCompatActivity {
         buttonWalk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), WalkActivity.class);
-                startActivity(intent);
-                finish();
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                WalkActivity walkActivity = new WalkActivity();
+                transaction.replace(R.id.linearLayout1, walkActivity);
+                transaction.addToBackStack(null);
+                transaction.commit();
             }
         });
 
@@ -97,19 +109,23 @@ public class MainActivity extends AppCompatActivity {
         buttonRun.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), RunActivity.class);
-                startActivity(intent);
-                finish();
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                RunActivity runActivity = new RunActivity();
+                transaction.replace(R.id.linearLayout1, runActivity);
+                transaction.addToBackStack(null);
+                transaction.commit();
             }
         });
 
-        // Call Standing Activity View
+        // Call Lying Activity View
         buttonLying.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), LyingActivity.class);
-                startActivity(intent);
-                finish();
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                LyingActivity lyingActivity= new LyingActivity();
+                transaction.replace(R.id.linearLayout1, lyingActivity);
+                transaction.addToBackStack(null);
+                transaction.commit();
             }
         });
     }
