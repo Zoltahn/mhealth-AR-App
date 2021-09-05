@@ -5,10 +5,16 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
 import android.hardware.SensorEventListener;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -26,6 +32,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private TextView activityText;
     private TextView probabilityText;
     private TextView frequencyText;
+    private ImageView imageView;
+    private Ringtone ringtone;
     private List<Float> accellX, accellY, accellZ;
     private List<Float> linAcellX, linAcellY, linAcellZ;
     private List<Float> gyroX, gyroY, gyroZ;
@@ -50,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         activityText = findViewById(R.id.Text1);
         probabilityText = findViewById(R.id.Text2);
         frequencyText = findViewById(R.id.Text11);
+        imageView = findViewById(R.id.image1);
         //Create instance of system sensor service, allowing access to the devices sensors
         mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
         //Create accelerometer object from SensorManager
@@ -61,6 +70,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         Button buttonMain = findViewById(R.id.button2);
         Button buttonAnalysis = findViewById(R.id.button3);
         Button buttonSettings = findViewById(R.id.button4);
+
+        // Loading image rotation
+        imageView = findViewById(R.id.image1);
+        Animation anim = AnimationUtils.loadAnimation(
+                getApplicationContext(),
+                R.anim.rotate_anim
+        );
+        imageView.startAnimation(anim);
+
+        // Sound Notification
+        Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        ringtone = RingtoneManager.getRingtone(getApplicationContext(), uri);
 
         // Call Main View (Refresh)
         buttonMain.setOnClickListener(new View.OnClickListener() {
@@ -185,28 +206,40 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         String probability = String.format("%.2f", rand.nextFloat());
         switch(int_random){
             case 0:
+                imageView.setImageResource(R.drawable.standing);
                 activityText.setText("Standing");
                 probabilityText.setText("Probability: "+probability);
+                ringtone.play();
                 break;
             case 1:
+                imageView.setImageResource(R.drawable.sitting);
                 activityText.setText("Sitting");
                 probabilityText.setText("Probability: "+probability);
+                ringtone.play();
                 break;
             case 2:
+                imageView.setImageResource(R.drawable.jogging);
                 activityText.setText("Jogging");
                 probabilityText.setText("Probability: "+probability);
+                ringtone.play();
                 break;
             case 3:
+                imageView.setImageResource(R.drawable.walking);
                 activityText.setText("Walking");
                 probabilityText.setText("Probability: "+probability);
+                ringtone.play();
                 break;
             case 4:
+                imageView.setImageResource(R.drawable.upstairs);
                 activityText.setText("Upstairs");
                 probabilityText.setText("Probability: "+probability);
+                ringtone.play();
                 break;
             case 5:
+                imageView.setImageResource(R.drawable.downstairs);
                 activityText.setText("Downstairs");
                 probabilityText.setText("Probability: "+probability);
+                ringtone.play();
                 break;
         }
     }
