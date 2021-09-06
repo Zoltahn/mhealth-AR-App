@@ -1,12 +1,18 @@
 package com.example.myapplication;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+
+import com.google.android.material.navigation.NavigationView;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.Viewport;
 import com.jjoe64.graphview.series.DataPoint;
@@ -22,6 +28,9 @@ public class AnalysingActivity extends AppCompatActivity implements SensorEventL
     private Sensor mAccelerometer;
     private Sensor mLinearAccelerometer;
     private Sensor mGyroscope;
+
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle toggle;
 
     private Viewport viewport ;
     private int pointsPlotted = 0;
@@ -42,11 +51,6 @@ public class AnalysingActivity extends AppCompatActivity implements SensorEventL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_analysing);
 
-        // Buttons (Main Menus)
-        Button buttonMain = findViewById(R.id.button2);
-        Button buttonAnalysis = findViewById(R.id.button3);
-        Button buttonSettings = findViewById(R.id.button4);
-
         //Create instance of system sensor service, allowing access to the devices sensors
         mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
         //Create accelerometer object from SensorManager
@@ -54,35 +58,16 @@ public class AnalysingActivity extends AppCompatActivity implements SensorEventL
         mLinearAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         mGyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
 
-        // Call Main View (Refresh)
-        buttonMain.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        });
+        // get drawer for navigation view
+        drawerLayout = findViewById(R.id.drawer);
+        toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // Call Analysis View
-        buttonAnalysis.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), AnalysingActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        });
-
-        // Call Settings View
-        buttonSettings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), SettingActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        });
+        // Navigation Highlight
+        NavigationView navigationView = this.findViewById(R.id.navigation_view);
+        navigationView.setCheckedItem(R.id.analysis_activity);
     }
 
     @Override
@@ -152,5 +137,27 @@ public class AnalysingActivity extends AppCompatActivity implements SensorEventL
     //situations such as heavy processing loads or power saving mode
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    }
+
+    // Change Activity
+    public void changeActivity(MenuItem menuItem) {
+        switch (menuItem.getItemId()){
+            case R.id.main_activity:
+                Intent intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
+                finish();
+                break;
+            case R.id.settings_activity:
+                intent = new Intent(this, SettingActivity.class);
+                startActivity(intent);
+                finish();
+                break;
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(toggle.onOptionsItemSelected(item)) return true;
+        return super.onOptionsItemSelected(item);
     }
 }

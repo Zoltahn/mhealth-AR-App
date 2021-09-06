@@ -9,13 +9,22 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +43,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private TextView frequencyText;
     private ImageView imageView;
     private Ringtone ringtone;
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle toggle;
     private List<Float> accellX, accellY, accellZ;
     private List<Float> linAcellX, linAcellY, linAcellZ;
     private List<Float> gyroX, gyroY, gyroZ;
@@ -66,11 +77,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         mLinearAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         mGyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
 
-        // Buttons (Main Menus)
-        Button buttonMain = findViewById(R.id.button2);
-        Button buttonAnalysis = findViewById(R.id.button3);
-        Button buttonSettings = findViewById(R.id.button4);
-
         // Loading image rotation
         imageView = findViewById(R.id.image1);
         Animation anim = AnimationUtils.loadAnimation(
@@ -83,34 +89,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         ringtone = RingtoneManager.getRingtone(getApplicationContext(), uri);
 
-        // Call Main View (Refresh)
-        buttonMain.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        });
+        // get drawer for navigation view
+        drawerLayout = findViewById(R.id.drawer);
+        toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // Call Analysis View
-        buttonAnalysis.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), AnalysingActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        });
+        // Navigation Highlight
+        NavigationView navigationView = this.findViewById(R.id.navigation_view);
+        navigationView.setCheckedItem(R.id.main_activity);
 
-        // Call Settings View
-        buttonSettings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), SettingActivity.class);
-                startActivity(intent);
-            }
-        });
         //List<Float> datas = new ArrayList<>();
         //runClassifier(datas);
     }
@@ -248,5 +237,27 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     //situations such as heavy processing loads or power saving mode
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    }
+
+    // Change Activity
+    public void changeActivity(MenuItem menuItem) {
+        switch (menuItem.getItemId()){
+            case R.id.analysis_activity:
+                Intent intent = new Intent(this, AnalysingActivity.class);
+                startActivity(intent);
+                finish();
+                break;
+            case R.id.settings_activity:
+                intent = new Intent(this, SettingActivity.class);
+                startActivity(intent);
+                finish();
+                break;
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(toggle.onOptionsItemSelected(item)) return true;
+        return super.onOptionsItemSelected(item);
     }
 }
