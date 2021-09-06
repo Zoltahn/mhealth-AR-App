@@ -25,7 +25,6 @@ public class AnalysingActivity extends AppCompatActivity implements SensorEventL
 
     private Viewport viewport ;
     private int pointsPlotted = 0;
-    private int graphIntervalCounter = 0;
 
     //initialise line series according to tri-axial data
     LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(new DataPoint[]  {
@@ -90,7 +89,7 @@ public class AnalysingActivity extends AppCompatActivity implements SensorEventL
     public void onResume() {
         super.onResume();
         //Register event listener using SensorManager
-        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME);
         mSensorManager.registerListener(this, mLinearAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         mSensorManager.registerListener(this, mGyroscope, SensorManager.SENSOR_DELAY_NORMAL);
 
@@ -129,9 +128,19 @@ public class AnalysingActivity extends AppCompatActivity implements SensorEventL
             series2.appendData(new DataPoint(pointsPlotted,event.values[2]), true , pointsPlotted);
             //sets min and max value of graph to auto incrementing value to allow for constant data to be displayed in graph
             viewport.setMaxX(pointsPlotted);
-            viewport.setMinX(pointsPlotted - 10);
-            //
             graph.getGridLabelRenderer().setHorizontalLabelsVisible(false);
+            viewport.setMinX(0);
+
+            if (pointsPlotted > 10){
+                viewport.setMinX(pointsPlotted - 10);
+            }
+
+            if (pointsPlotted > 100){
+                pointsPlotted = 0;
+                series.resetData( new DataPoint[] { new DataPoint(1,0)});
+                series1.resetData( new DataPoint[] { new DataPoint(1,0)});
+                series2.resetData( new DataPoint[] { new DataPoint(1,0)});
+            }
         }
         else if(event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
         }
