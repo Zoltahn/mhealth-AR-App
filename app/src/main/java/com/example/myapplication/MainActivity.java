@@ -99,9 +99,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // Navigation Highlight
         NavigationView navigationView = this.findViewById(R.id.navigation_view);
         navigationView.setCheckedItem(R.id.main_activity);
-
-        //List<Float> datas = new ArrayList<>();
-        //runClassifier(datas);
     }
 
     @Override

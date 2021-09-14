@@ -21,6 +21,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
 import android.hardware.SensorEventListener;
+import android.widget.TextView;
 
 public class AnalysingActivity extends AppCompatActivity implements SensorEventListener{
 
@@ -32,9 +33,10 @@ public class AnalysingActivity extends AppCompatActivity implements SensorEventL
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
 
-    private Viewport viewport ;
+    private Viewport viewport;
     private int pointsPlotted = 0;
-    private int graphIntervalCounter = 0;
+    public static int act = 1;
+    private TextView sensValue;
 
     //initialise line series according to tri-axial data
     LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(new DataPoint[]  {
@@ -69,13 +71,57 @@ public class AnalysingActivity extends AppCompatActivity implements SensorEventL
         // Navigation Highlight
         NavigationView navigationView = this.findViewById(R.id.navigation_view);
         navigationView.setCheckedItem(R.id.analysis_activity);
+
+        Button buttonAccel = findViewById(R.id.button5);
+        Button buttonLinAccel = findViewById(R.id.button7);
+        Button buttonGyro = findViewById(R.id.button6);
+        sensValue = findViewById(R.id.sensValue);
+
+        GraphView graph = (GraphView) findViewById(R.id.graph);
+        viewport = graph.getViewport();
+        // allows graph to scroll through live data
+        viewport.setXAxisBoundsManual(true);
+        viewport.setScrollable(true);
+
+        // adds line series to line graph
+        graph.addSeries(series);
+        graph.addSeries(series1);
+        graph.addSeries(series2);
+
+        // assigns colours to each line series representing x , y,z accelerometer data
+        series.setColor(Color.RED); // x axis
+        series1.setColor(Color.GREEN); // y axis
+        series2.setColor(Color.BLUE); // z xis
+
+        graph.getGridLabelRenderer().setHorizontalLabelsVisible(false);
+
+        buttonGyro.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                act = 3;
+            }
+        });
+
+        buttonAccel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                act = 1;
+
+            }
+        });
+        buttonLinAccel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view  ) {
+                act = 2;
+            }
+        });
     }
 
     @Override
     public void onResume() {
         super.onResume();
         //Register event listener using SensorManager
-        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME);
         mSensorManager.registerListener(this, mLinearAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         mSensorManager.registerListener(this, mGyroscope, SensorManager.SENSOR_DELAY_NORMAL);
 
@@ -89,23 +135,10 @@ public class AnalysingActivity extends AppCompatActivity implements SensorEventL
     }
 
     public void onSensorChanged(SensorEvent event) {
-        if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
+        //extra clause to validate whether user has  chosen specified sensor
+        if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER && act== 1){
+            sensValue.setText("Accelerometer");
             //initialises graph
-            GraphView graph = (GraphView) findViewById(R.id.graph);
-            viewport = graph.getViewport();
-            // allows graph to scroll through live data
-            viewport.setScrollable(true);
-
-            // adds line series to line graph
-            graph.addSeries(series);
-            graph.addSeries(series1);
-            graph.addSeries(series2);
-
-            // assigns colours to each line series representing x , y,z accelerometer data
-            series.setColor(Color.RED); // x axis
-            series1.setColor(Color.GREEN); // y axis
-            series2.setColor(Color.BLUE); // z xis
-
             // auto increments x axis of graph
             pointsPlotted ++;
             // adds live sensor data to initialised graph
@@ -114,13 +147,68 @@ public class AnalysingActivity extends AppCompatActivity implements SensorEventL
             series2.appendData(new DataPoint(pointsPlotted,event.values[2]), true , pointsPlotted);
             //sets min and max value of graph to auto incrementing value to allow for constant data to be displayed in graph
             viewport.setMaxX(pointsPlotted);
-            viewport.setMinX(pointsPlotted - 10);
-            //
-            graph.getGridLabelRenderer().setHorizontalLabelsVisible(false);
+
+            viewport.setMinX(0);
+
+            if (pointsPlotted > 10){
+                viewport.setMinX(pointsPlotted - 10);
+            }
+
+            if (pointsPlotted > 200 ){
+                pointsPlotted = 0;
+                series.resetData( new DataPoint[] { new DataPoint(0,0)});
+                series1.resetData( new DataPoint[] { new DataPoint(0,0)});
+                series2.resetData( new DataPoint[] { new DataPoint(0,0)});
+            }
         }
-        else if(event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
+        else if(event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION && act== 2) {
+            sensValue.setText("Linear Acceleration");
+            // auto increments x axis of graph
+            pointsPlotted ++;
+            // adds live sensor data to initialised graph
+            series.appendData(new DataPoint(pointsPlotted,event.values[0]), true , pointsPlotted);
+            series1.appendData(new DataPoint(pointsPlotted,event.values[1]), true , pointsPlotted);
+            series2.appendData(new DataPoint(pointsPlotted,event.values[2]), true , pointsPlotted);
+            //sets min and max value of graph to auto incrementing value to allow for constant data to be displayed in graph
+            viewport.setMaxX(pointsPlotted);
+
+            viewport.setMinX(0);
+
+            if (pointsPlotted > 10){
+                viewport.setMinX(pointsPlotted - 10);
+            }
+
+            if (pointsPlotted > 200){
+                pointsPlotted = 0;
+                series.resetData( new DataPoint[] { new DataPoint(0,0)});
+                series1.resetData( new DataPoint[] { new DataPoint(0,0)});
+                series2.resetData( new DataPoint[] { new DataPoint(0,0)});
+            }
+
         }
-        else if(event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
+        else if(event.sensor.getType() == Sensor.TYPE_GYROSCOPE && act== 3) {
+            sensValue.setText("GyroScope");
+            GraphView graph = (GraphView) findViewById(R.id.graph);
+            // auto increments x axis of graph
+            pointsPlotted ++;
+            // adds live sensor data to initialised graph
+            series.appendData(new DataPoint(pointsPlotted,event.values[0]), true , pointsPlotted);
+            series1.appendData(new DataPoint(pointsPlotted,event.values[1]), true , pointsPlotted);
+            series2.appendData(new DataPoint(pointsPlotted,event.values[2]), true , pointsPlotted);
+            //sets min and max value of graph to auto incrementing value to allow for constant data to be displayed in graph
+            viewport.setMaxX(pointsPlotted);
+            viewport.setMinX(0);
+
+            if (pointsPlotted > 10){
+                viewport.setMinX(pointsPlotted - 10);
+            }
+
+            if (pointsPlotted > 20){
+                pointsPlotted = 0;
+                series.resetData( new DataPoint[] { new DataPoint(0,0)});
+                series1.resetData( new DataPoint[] { new DataPoint(0,0)});
+                series2.resetData( new DataPoint[] { new DataPoint(0,0)});
+            }
         }
     }
 
