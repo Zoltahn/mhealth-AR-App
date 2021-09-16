@@ -22,7 +22,7 @@
             <item
                 android:id="@+id/setting_sound"
                 android:title="Sound"
-                android:actionLayout="@layout/sound_notification_switch">
+                app:actionLayout="@layout/sound_notification_switch">
             </item>
         </menu>
     </item>
