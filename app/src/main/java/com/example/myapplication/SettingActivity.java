@@ -30,9 +30,6 @@ public class SettingActivity extends AppCompatActivity {
         toggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // Navigation Highlight
-        NavigationView navigationView = this.findViewById(R.id.navigation_view);
-        navigationView.setCheckedItem(R.id.settings_activity);
     }
 
     // Change Activity

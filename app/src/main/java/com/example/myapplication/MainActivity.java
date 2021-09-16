@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private TextView frequencyText;
     private ImageView imageView;
     private Ringtone ringtone;
+    private boolean soundSwitch;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
     private List<Float> accellX, accellY, accellZ;
@@ -95,6 +97,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        // Sound Switch
+        soundSwitch = true;
 
         // Navigation Highlight
         NavigationView navigationView = this.findViewById(R.id.navigation_view);
@@ -238,18 +243,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     // Change Activity
     public void changeActivity(MenuItem menuItem) {
-        switch (menuItem.getItemId()){
-            case R.id.analysis_activity:
+        if (menuItem.getItemId() == R.id.analysis_activity){
                 Intent intent = new Intent(this, AnalysingActivity.class);
                 startActivity(intent);
                 finish();
-                break;
-            case R.id.settings_activity:
-                intent = new Intent(this, SettingActivity.class);
-                startActivity(intent);
-                finish();
-                break;
         }
+    }
+
+    public void SwitchSound(View view) {
+        CompoundButton switchButton = (CompoundButton) view;
+        soundSwitch = switchButton.isChecked();
     }
 
     @Override

@@ -1,16 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/main_activity"
-        android:title="mHealth"
-        android:onClick="changeActivity" />
-    <item
-        android:id="@+id/analysis_activity"
-        android:title="Analysis"
-        android:onClick="changeActivity"/>
-    <item
-        android:id="@+id/settings_activity"
-        android:title="Settings"
-        android:onClick="changeActivity"/>
+    <item android:title="Main App">
+        <menu>
+            <group
+                android:checkable="true"
+                android:checkableBehavior="single">
+                <item
+                    android:id="@+id/main_activity"
+                    android:title="mHealth"
+                    android:onClick="changeActivity" />
+                <item
+                    android:id="@+id/analysis_activity"
+                    android:title="Analysis"
+                    android:onClick="changeActivity"/>
+            </group>
+        </menu>
+    </item>
+    <item android:title="Settings">
+        <menu>
+            <item
+                android:id="@+id/setting_sound"
+                android:title="Sound"
+                android:actionLayout="@layout/sound_notification_switch">
+            </item>
+        </menu>
+    </item>
+
 </menu>

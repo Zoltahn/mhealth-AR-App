@@ -220,17 +220,10 @@ public class AnalysingActivity extends AppCompatActivity implements SensorEventL
 
     // Change Activity
     public void changeActivity(MenuItem menuItem) {
-        switch (menuItem.getItemId()){
-            case R.id.main_activity:
+        if (menuItem.getItemId() == R.id.main_activity){
                 Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
                 finish();
-                break;
-            case R.id.settings_activity:
-                intent = new Intent(this, SettingActivity.class);
-                startActivity(intent);
-                finish();
-                break;
         }
     }
 
