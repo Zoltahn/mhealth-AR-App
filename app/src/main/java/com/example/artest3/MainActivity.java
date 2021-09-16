@@ -170,9 +170,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 //            }
 //            float[][] postures = doInference(theArray);
             float[][] postures = doInference(toFloatArray(data));
-            probabilityText.setText("RNN - UCI_HAR Probabilities\n"+"Downstairs: "+String.format("%.2f",postures[0][0])+"\n"+"Jogging: "+
-                    String.format("%.2f",postures[0][1])+"\n"+"Sitting: "+String.format("%.2f",postures[0][2])+"\n"+"Standing: "+
-                    String.format("%.2f",postures[0][3])+"\n"+"Upstairs: "+String.format("%.2f",postures[0][4])+"\n"+"Walking: "+String.format("%.2f",postures[0][5]));
+//            probabilityText.setText("RNN - UCI_HAR Probabilities\n"+"Downstairs: "+String.format("%.2f",postures[0][0])+"\n"+"Jogging: "+
+//                    String.format("%.2f",postures[0][1])+"\n"+"Sitting: "+String.format("%.2f",postures[0][2])+"\n"+"Standing: "+
+//                    String.format("%.2f",postures[0][3])+"\n"+"Upstairs: "+String.format("%.2f",postures[0][4])+"\n"+"Walking: "+String.format("%.2f",postures[0][5]));
+            probabilityText.setText("RNN - UCI_HAR Probabilities\n"+"Walking: "+String.format("%.2f",postures[0][0])+"\n"+"Walking up: "+
+                    String.format("%.2f",postures[0][1])+"\n"+"Walking down: "+String.format("%.2f",postures[0][2])+"\n"+"Sitting: "+
+                    String.format("%.2f",postures[0][3])+"\n"+"Standing: "+String.format("%.2f",postures[0][4])+"\n"+"Lying: "+String.format("%.2f",postures[0][5]));
             //probabilityText.setText(theArray[0][100][0] + "\n" + theArray[0][100][1] + "\n" + theArray[0][100][2]);
             //Remove data from arrays in preparation for next classification
             accellX.clear();
