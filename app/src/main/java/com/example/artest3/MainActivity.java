@@ -32,11 +32,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private List<Float> accellX, accellY, accellZ;
     private List<Float> linAcellX, linAcellY, linAcellZ;
     private List<Float> gyroX, gyroY, gyroZ;
-    private static int sampleSize = 200;
+    private static int sampleSize = 128;
     private TextView frequencyText;
     private TextView probabilityText;
     private TextView sensorText;
-    private TextView arrayText;
+    private TextView lAccellText;
+    private TextView gyroText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +56,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-//        mLinearAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
-//        mGyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        mLinearAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+        mGyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
 
         //load model file, initialise interpreter
         try {
@@ -68,12 +69,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         frequencyText = findViewById(R.id.Text1);
         probabilityText = findViewById(R.id.Text2);
         sensorText = findViewById(R.id.Text3);
-        //arrayText = findViewById(R.id.Text4);
+        lAccellText = findViewById(R.id.Text4);
+        gyroText = findViewById(R.id.Text5);
     }
 
         //load model into the apps assets
         private MappedByteBuffer loadModelFile() throws IOException {
-        String MODEL_ASSETS_PATH = "CNN_test_-_WISDM_ar_ns.tflite";
+        String MODEL_ASSETS_PATH = "RNN - UCI_HAR.tflite";
         AssetFileDescriptor assetFileDescriptor = this.getAssets().openFd(MODEL_ASSETS_PATH);
         FileInputStream fileInputStream = new FileInputStream(assetFileDescriptor.getFileDescriptor() );
         FileChannel fileChannel = fileInputStream.getChannel();
@@ -94,15 +96,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onResume();
         //Register event listener using SensorManager
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME);
-//        mSensorManager.registerListener(this, mLinearAccelerometer, SensorManager.SENSOR_DELAY_GAME);
-//        mSensorManager.registerListener(this, mGyroscope, SensorManager.SENSOR_DELAY_GAME);
+        mSensorManager.registerListener(this, mLinearAccelerometer, SensorManager.SENSOR_DELAY_GAME);
+        mSensorManager.registerListener(this, mGyroscope, SensorManager.SENSOR_DELAY_GAME);
     }
     @Override
     public void onPause() {
         super.onPause();
         mSensorManager.unregisterListener(this, mAccelerometer);
-//        mSensorManager.unregisterListener(this, mLinearAccelerometer);
-//        mSensorManager.unregisterListener(this, mGyroscope);
+        mSensorManager.unregisterListener(this, mLinearAccelerometer);
+        mSensorManager.unregisterListener(this, mGyroscope);
     }
 
     //Provides the sensor values inside the values[] array of the SensorEvent object
@@ -117,20 +119,22 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 sensorText.setText("Accelerometer"+"\n"+"X: " + String.format("%.4f",event.values[0])+"\n"+"Y: "+ String.format("%.4f",event.values[1])+"\n"+"Z: " + String.format("%.4f",event.values[2])+"\n");
             }
         }
-//        else if(event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
-//            if(linAcellX.size() < sampleSize) {
-//                linAcellX.add(event.values[0]);
-//                linAcellY.add(event.values[1]);
-//                linAcellZ.add(event.values[2]);
-//            }
-//        }
-//        else if(event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
-//            if(gyroX.size() < sampleSize) {
-//                gyroX.add(event.values[0]);
-//                gyroY.add(event.values[1]);
-//                gyroZ.add(event.values[2]);
-//            }
-//        }
+        else if(event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
+            if(linAcellX.size() < sampleSize) {
+                linAcellX.add(event.values[0]);
+                linAcellY.add(event.values[1]);
+                linAcellZ.add(event.values[2]);
+                lAccellText.setText("Linear"+"\n"+"X: " + String.format("%.4f",event.values[0])+"\n"+"Y: "+ String.format("%.4f",event.values[1])+"\n"+"Z: " + String.format("%.4f",event.values[2])+"\n");
+            }
+        }
+        else if(event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
+            if(gyroX.size() < sampleSize) {
+                gyroX.add(event.values[0]);
+                gyroY.add(event.values[1]);
+                gyroZ.add(event.values[2]);
+                gyroText.setText("Gyroscope"+"\n"+"X: " + String.format("%.4f",event.values[0])+"\n"+"Y: "+ String.format("%.4f",event.values[1])+"\n"+"Z: " + String.format("%.4f",event.values[2])+"\n");
+            }
+        }
         //sensorText.setText("Accelerometer"+"\n"+"X: " + String.format("%.4f",event.values[0])+"\n"+"Y: "+ String.format("%.4f",event.values[1])+"\n"+"Z: " + String.format("%.4f",event.values[2])+"\n");
         frequencyText.setText(String.valueOf("Update frequency:"+"\n"+ "Accelerometer: "+accellX.size())+"\n"+
                 "Linear Accelerometer: "+String.valueOf(linAcellX.size())+"\n"+"Gyroscope: "+String.valueOf(gyroX.size()));
@@ -138,20 +142,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     public void PredictActivity() {
         //Runs prediction when 200 samples are collected for each sensor
-        if (accellX.size() == sampleSize) {
-            //&& linAcellX.size() == sampleSize && gyroX.size() == sampleSize
+        if (accellX.size() == sampleSize && linAcellX.size() == sampleSize && gyroX.size() == sampleSize) {
             //Append all sensor data to array to send to classifier
             ArrayList<Float> data = new ArrayList<>();
             data.addAll(accellX);
             data.addAll(accellY);
             data.addAll(accellZ);
-//            data.addAll(linAcellX);
-//            data.addAll(linAcellY);
-//            data.addAll(linAcellZ);
-//            data.addAll(gyroX);
-//            data.addAll(gyroY);
-//            data.addAll(gyroZ);
-
+            data.addAll(linAcellX);
+            data.addAll(linAcellY);
+            data.addAll(linAcellZ);
+            data.addAll(gyroX);
+            data.addAll(gyroY);
+            data.addAll(gyroZ);
 
 //            Random r = new Random();
 //            float max = 1;
@@ -168,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 //            }
 //            float[][] postures = doInference(theArray);
             float[][] postures = doInference(toFloatArray(data));
-            probabilityText.setText("CNN WISM at Probabilities\n"+"Downstairs: "+String.format("%.2f",postures[0][0])+"\n"+"Jogging: "+
+            probabilityText.setText("RNN - UCI_HAR Probabilities\n"+"Downstairs: "+String.format("%.2f",postures[0][0])+"\n"+"Jogging: "+
                     String.format("%.2f",postures[0][1])+"\n"+"Sitting: "+String.format("%.2f",postures[0][2])+"\n"+"Standing: "+
                     String.format("%.2f",postures[0][3])+"\n"+"Upstairs: "+String.format("%.2f",postures[0][4])+"\n"+"Walking: "+String.format("%.2f",postures[0][5]));
             //probabilityText.setText(theArray[0][100][0] + "\n" + theArray[0][100][1] + "\n" + theArray[0][100][2]);
@@ -176,20 +178,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             accellX.clear();
             accellY.clear();
             accellZ.clear();
-//            linAcellX.clear();
-//            linAcellY.clear();
-//            linAcellZ.clear();
-//            gyroX.clear();
-//            gyroY.clear();
-//            gyroZ.clear();
+            linAcellX.clear();
+            linAcellY.clear();
+            linAcellZ.clear();
+            gyroX.clear();
+            gyroY.clear();
+            gyroZ.clear();
         }
     }
     //convert sensor data into a 3d array in the format of float[1][200][3]
     private float[][][] toFloatArray(List<Float> list) {
         int i = 0;
-        int k = 0;
-        int t = 0;
-        float theArray[][][] =  new float[1][sampleSize][3];
+        float theArray[][][] =  new float[1][sampleSize][9];
         for (Float f : list) {
             if(i < sampleSize) {
                 theArray[0][i][0] = f;
@@ -200,24 +200,24 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             else if(i < sampleSize * 3) {
                 theArray[0][i - sampleSize * 2][2] = f;
             }
-//            else if(i < sampleSize * 4) {
-//                theArray[0][i - sampleSize * 3][3] = f;
-//            }
-//            else if(i < sampleSize * 5) {
-//                theArray[0][i - sampleSize * 4][4] = f;
-//            }
-//            else if(i < sampleSize * 6) {
-//                theArray[0][i - sampleSize * 5][5] = f;
-//            }
-//            else if(i < sampleSize * 7) {
-//                theArray[0][i - sampleSize * 6][6] = f;
-//            }
-//            else if(i < sampleSize * 8) {
-//                theArray[0][i - sampleSize * 7][7] = f;
-//            }
-//            else if(i < sampleSize * 9) {
-//                theArray[0][i - sampleSize * 8][8] = f;
-//            }
+            else if(i < sampleSize * 4) {
+                theArray[0][i - sampleSize * 3][3] = f;
+            }
+            else if(i < sampleSize * 5) {
+                theArray[0][i - sampleSize * 4][4] = f;
+            }
+            else if(i < sampleSize * 6) {
+                theArray[0][i - sampleSize * 5][5] = f;
+            }
+            else if(i < sampleSize * 7) {
+                theArray[0][i - sampleSize * 6][6] = f;
+            }
+            else if(i < sampleSize * 8) {
+                theArray[0][i - sampleSize * 7][7] = f;
+            }
+            else if(i < sampleSize * 9) {
+                theArray[0][i - sampleSize * 8][8] = f;
+            }
             i++;
         }
         //normalize values to be between 0-1
