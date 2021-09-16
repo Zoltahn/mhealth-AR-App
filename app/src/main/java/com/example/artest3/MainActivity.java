@@ -55,8 +55,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        mLinearAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
-        mGyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+//        mLinearAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+//        mGyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
 
         //load model file, initialise interpreter
         try {
@@ -73,13 +73,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         //load model into the apps assets
         private MappedByteBuffer loadModelFile() throws IOException {
-        String MODEL_ASSETS_PATH = "CNN_test - WISDM_at.tflite";
+        String MODEL_ASSETS_PATH = "CNN_test_-_WISDM_ar_ns.tflite";
         AssetFileDescriptor assetFileDescriptor = this.getAssets().openFd(MODEL_ASSETS_PATH);
         FileInputStream fileInputStream = new FileInputStream(assetFileDescriptor.getFileDescriptor() );
         FileChannel fileChannel = fileInputStream.getChannel();
         long startoffset = assetFileDescriptor.getStartOffset();
         long declaredLength = assetFileDescriptor.getDeclaredLength() ;
-        return fileChannel.map( FileChannel.MapMode.READ_ONLY, startoffset, declaredLength );
+        return fileChannel.map(FileChannel.MapMode.READ_ONLY, startoffset, declaredLength);
     }
 
     //Send data to interpreter, get results back
@@ -94,15 +94,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onResume();
         //Register event listener using SensorManager
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME);
-        mSensorManager.registerListener(this, mLinearAccelerometer, SensorManager.SENSOR_DELAY_GAME);
-        mSensorManager.registerListener(this, mGyroscope, SensorManager.SENSOR_DELAY_GAME);
+//        mSensorManager.registerListener(this, mLinearAccelerometer, SensorManager.SENSOR_DELAY_GAME);
+//        mSensorManager.registerListener(this, mGyroscope, SensorManager.SENSOR_DELAY_GAME);
     }
     @Override
     public void onPause() {
         super.onPause();
         mSensorManager.unregisterListener(this, mAccelerometer);
-        mSensorManager.unregisterListener(this, mLinearAccelerometer);
-        mSensorManager.unregisterListener(this, mGyroscope);
+//        mSensorManager.unregisterListener(this, mLinearAccelerometer);
+//        mSensorManager.unregisterListener(this, mGyroscope);
     }
 
     //Provides the sensor values inside the values[] array of the SensorEvent object
@@ -111,10 +111,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         PredictActivity();
         if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
             if(accellX.size() < sampleSize) {
-                accellX.add(event.values[0] / mAccelerometer.getMaximumRange());
-                accellY.add(event.values[1] / mAccelerometer.getMaximumRange());
-                accellZ.add(event.values[2] / mAccelerometer.getMaximumRange());
-
+                accellX.add(event.values[0]);
+                accellY.add(event.values[1]);
+                accellZ.add(event.values[2]);
+                sensorText.setText("Accelerometer"+"\n"+"X: " + String.format("%.4f",event.values[0])+"\n"+"Y: "+ String.format("%.4f",event.values[1])+"\n"+"Z: " + String.format("%.4f",event.values[2])+"\n");
             }
         }
 //        else if(event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 //                gyroZ.add(event.values[2]);
 //            }
 //        }
-        sensorText.setText("Accelerometer"+"\n"+"X: " + String.format("%.4f",event.values[0] / mAccelerometer.getMaximumRange())+"\n"+"Y: "+ String.format("%.4f",event.values[1] / mAccelerometer.getMaximumRange())+"\n"+"Z: " + String.format("%.4f",event.values[2] / mAccelerometer.getMaximumRange())+"\n");
+        //sensorText.setText("Accelerometer"+"\n"+"X: " + String.format("%.4f",event.values[0])+"\n"+"Y: "+ String.format("%.4f",event.values[1])+"\n"+"Z: " + String.format("%.4f",event.values[2])+"\n");
         frequencyText.setText(String.valueOf("Update frequency:"+"\n"+ "Accelerometer: "+accellX.size())+"\n"+
                 "Linear Accelerometer: "+String.valueOf(linAcellX.size())+"\n"+"Gyroscope: "+String.valueOf(gyroX.size()));
     }
@@ -139,25 +139,31 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void PredictActivity() {
         //Runs prediction when 200 samples are collected for each sensor
         if (accellX.size() == sampleSize) {
+            //&& linAcellX.size() == sampleSize && gyroX.size() == sampleSize
             //Append all sensor data to array to send to classifier
             ArrayList<Float> data = new ArrayList<>();
             data.addAll(accellX);
             data.addAll(accellY);
             data.addAll(accellZ);
+//            data.addAll(linAcellX);
+//            data.addAll(linAcellY);
+//            data.addAll(linAcellZ);
+//            data.addAll(gyroX);
+//            data.addAll(gyroY);
+//            data.addAll(gyroZ);
+
+
 //            Random r = new Random();
 //            float max = 1;
 //            float min = -1;
 //            float theArray[][][] =  new float[1][200][3];
-//            float[] floats1 = new float[200];
-//            for (int i = 0; i < floats1.length; i++) {
+//            for (int i = 0; i < 200; i++) {
 //                theArray[0][i][0] = r.nextFloat() * (max -  min) + min;
 //            }
-//            float[] floats2 = new float[200];
-//            for (int i = 0; i < floats2.length; i++) {
+//            for (int i = 0; i < 200; i++) {
 //                theArray[0][i][1] = r.nextFloat() * (max -  min) + min;
 //            }
-//            float[] floats3 = new float[200];
-//            for (int i = 0; i < floats2.length; i++) {
+//            for (int i = 0; i < 200; i++) {
 //                theArray[0][i][2] = r.nextFloat() * (max -  min) + min;
 //            }
 //            float[][] postures = doInference(theArray);
@@ -165,31 +171,53 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             probabilityText.setText("CNN WISM at Probabilities\n"+"Downstairs: "+String.format("%.2f",postures[0][0])+"\n"+"Jogging: "+
                     String.format("%.2f",postures[0][1])+"\n"+"Sitting: "+String.format("%.2f",postures[0][2])+"\n"+"Standing: "+
                     String.format("%.2f",postures[0][3])+"\n"+"Upstairs: "+String.format("%.2f",postures[0][4])+"\n"+"Walking: "+String.format("%.2f",postures[0][5]));
+            //probabilityText.setText(theArray[0][100][0] + "\n" + theArray[0][100][1] + "\n" + theArray[0][100][2]);
             //Remove data from arrays in preparation for next classification
             accellX.clear();
             accellY.clear();
             accellZ.clear();
+//            linAcellX.clear();
+//            linAcellY.clear();
+//            linAcellZ.clear();
+//            gyroX.clear();
+//            gyroY.clear();
+//            gyroZ.clear();
         }
     }
-
     //convert sensor data into a 3d array in the format of float[1][200][3]
     private float[][][] toFloatArray(List<Float> list) {
         int i = 0;
         int k = 0;
         int t = 0;
-        float theArray[][][] =  new float[1][200][3];
+        float theArray[][][] =  new float[1][sampleSize][3];
         for (Float f : list) {
-            if(i < 200) {
+            if(i < sampleSize) {
                 theArray[0][i][0] = f;
             }
-            else if(i < 400) {
-                theArray[0][k][1] = f;
-                k++;
+            else if(i < sampleSize * 2) {
+                theArray[0][i - sampleSize][1] = f;
             }
-            else if(i < 600) {
-                theArray[0][t][2] = f;
-                t++;
+            else if(i < sampleSize * 3) {
+                theArray[0][i - sampleSize * 2][2] = f;
             }
+//            else if(i < sampleSize * 4) {
+//                theArray[0][i - sampleSize * 3][3] = f;
+//            }
+//            else if(i < sampleSize * 5) {
+//                theArray[0][i - sampleSize * 4][4] = f;
+//            }
+//            else if(i < sampleSize * 6) {
+//                theArray[0][i - sampleSize * 5][5] = f;
+//            }
+//            else if(i < sampleSize * 7) {
+//                theArray[0][i - sampleSize * 6][6] = f;
+//            }
+//            else if(i < sampleSize * 8) {
+//                theArray[0][i - sampleSize * 7][7] = f;
+//            }
+//            else if(i < sampleSize * 9) {
+//                theArray[0][i - sampleSize * 8][8] = f;
+//            }
             i++;
         }
         //normalize values to be between 0-1
@@ -199,17 +227,25 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 //            float div2 = findMax(theArray, 1) - min2;
 //            float min3 = findMin(theArray, 2);
 //            float div3 = findMax(theArray, 2) - min3;
-//            probabilityText.setText(String.format("%.2f", min3) + "\n" + String.format("%.2f", div3));
-//            //probabilityText.setText(String.format("%.2f", theArray[0][50][2]));
-//            probabilityText.setText(String.format("%.2f", mAccelerometer.getMaximumRange()));
+//            float max1 = findMax(theArray, 0);
+//            float max2 = findMax(theArray, 1);
+//            float max3 = findMax(theArray, 2);
+            //probabilityText.setText(String.format("%.2f", max1) + "\n" + String.format("%.2f", max2));
+            //probabilityText.setText(String.format("%.2f", theArray[0][50][2]));
+            //probabilityText.setText(String.format("%.2f", mAccelerometer.getMaximumRange()));
+//            float x_m = 0.662868f; float y_m = 7.255639f; float z_m = 0.411062f;
+//             float x_s = 6.849058f; float y_s = 6.746204f; float z_s = 4.754109f;
 //            for(int s = 0; s < 200; s++){
-//                theArray[0][s][0] = (theArray[0][s][0] - min1) / div1;
+//                theArray[0][s][0] = theArray[0][s][0] / 20;
+//                //theArray[0][s][0] = (theArray[0][s][0] - x_m) / x_s;
 //            }
 //            for(int s = 0; s < 200; s++){
-//                theArray[0][s][1] = (theArray[0][s][1] - min2) / div2;
+//                theArray[0][s][1] = theArray[0][s][1] / 20;
+//                //theArray[0][s][1] = (theArray[0][s][1] - y_m) / y_s;
 //            }
 //            for(int s = 0; s < 200; s++) {
-//                theArray[0][s][2] = (theArray[0][s][2] - min3) / div3;
+//                theArray[0][s][2] = theArray[0][s][2] / 20;
+//                //theArray[0][s][2] = (theArray[0][s][2] - z_m) / z_s;
 //            }
         return theArray;
     }
