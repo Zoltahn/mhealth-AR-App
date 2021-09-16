@@ -200,37 +200,37 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 imageView.setImageResource(R.drawable.standing);
                 activityText.setText("Standing");
                 probabilityText.setText("Probability: "+probability);
-                ringtone.play();
+                if(soundSwitch) ringtone.play();
                 break;
             case 1:
                 imageView.setImageResource(R.drawable.sitting);
                 activityText.setText("Sitting");
                 probabilityText.setText("Probability: "+probability);
-                ringtone.play();
+                if(soundSwitch) ringtone.play();
                 break;
             case 2:
                 imageView.setImageResource(R.drawable.jogging);
                 activityText.setText("Jogging");
                 probabilityText.setText("Probability: "+probability);
-                ringtone.play();
+                if(soundSwitch) ringtone.play();
                 break;
             case 3:
                 imageView.setImageResource(R.drawable.walking);
                 activityText.setText("Walking");
                 probabilityText.setText("Probability: "+probability);
-                ringtone.play();
+                if(soundSwitch) ringtone.play();
                 break;
             case 4:
                 imageView.setImageResource(R.drawable.upstairs);
                 activityText.setText("Upstairs");
                 probabilityText.setText("Probability: "+probability);
-                ringtone.play();
+                if(soundSwitch) ringtone.play();
                 break;
             case 5:
                 imageView.setImageResource(R.drawable.downstairs);
                 activityText.setText("Downstairs");
                 probabilityText.setText("Probability: "+probability);
-                ringtone.play();
+                if(soundSwitch) ringtone.play();
                 break;
         }
     }
