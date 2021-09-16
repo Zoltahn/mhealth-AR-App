@@ -42,6 +42,6 @@ dependencies {
     implementation 'org.tensorflow:tensorflow-lite-metadata:0.1.0'
     implementation 'org.tensorflow:tensorflow-lite-gpu:2.3.0'
     implementation 'org.tensorflow:tensorflow-lite:+'
-    implementation 'org.tensorflow:tensorflow-android:+'
+    //implementation 'org.tensorflow:tensorflow-android:+'
 
 }

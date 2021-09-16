@@ -18,6 +18,7 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.tensorflow.lite.Interpreter;
 
@@ -95,7 +96,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME);
         mSensorManager.registerListener(this, mLinearAccelerometer, SensorManager.SENSOR_DELAY_GAME);
         mSensorManager.registerListener(this, mGyroscope, SensorManager.SENSOR_DELAY_GAME);
-
     }
     @Override
     public void onPause() {
@@ -111,9 +111,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         PredictActivity();
         if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
             if(accellX.size() < sampleSize) {
-                accellX.add(event.values[0]);
-                accellY.add(event.values[1]);
-                accellZ.add(event.values[2]);
+                accellX.add(event.values[0] / mAccelerometer.getMaximumRange());
+                accellY.add(event.values[1] / mAccelerometer.getMaximumRange());
+                accellZ.add(event.values[2] / mAccelerometer.getMaximumRange());
 
             }
         }
@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 //                gyroZ.add(event.values[2]);
 //            }
 //        }
-        sensorText.setText("Accelerometer"+"\n"+"X: " +event.values[0]+"\n"+"Y: "+event.values[1]+"\n"+"Z: " +event.values[2]+"\n");
+        sensorText.setText("Accelerometer"+"\n"+"X: " + String.format("%.4f",event.values[0] / mAccelerometer.getMaximumRange())+"\n"+"Y: "+ String.format("%.4f",event.values[1] / mAccelerometer.getMaximumRange())+"\n"+"Z: " + String.format("%.4f",event.values[2] / mAccelerometer.getMaximumRange())+"\n");
         frequencyText.setText(String.valueOf("Update frequency:"+"\n"+ "Accelerometer: "+accellX.size())+"\n"+
                 "Linear Accelerometer: "+String.valueOf(linAcellX.size())+"\n"+"Gyroscope: "+String.valueOf(gyroX.size()));
     }
@@ -144,11 +144,27 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             data.addAll(accellX);
             data.addAll(accellY);
             data.addAll(accellZ);
-            //Send sensor data to be classified
+//            Random r = new Random();
+//            float max = 1;
+//            float min = -1;
+//            float theArray[][][] =  new float[1][200][3];
+//            float[] floats1 = new float[200];
+//            for (int i = 0; i < floats1.length; i++) {
+//                theArray[0][i][0] = r.nextFloat() * (max -  min) + min;
+//            }
+//            float[] floats2 = new float[200];
+//            for (int i = 0; i < floats2.length; i++) {
+//                theArray[0][i][1] = r.nextFloat() * (max -  min) + min;
+//            }
+//            float[] floats3 = new float[200];
+//            for (int i = 0; i < floats2.length; i++) {
+//                theArray[0][i][2] = r.nextFloat() * (max -  min) + min;
+//            }
+//            float[][] postures = doInference(theArray);
             float[][] postures = doInference(toFloatArray(data));
-            probabilityText.setText("CNN WISM Probabilities\n"+"Downstairs: "+String.valueOf(postures[0][0])+"\n"+"Jogging: "+
-                    String.valueOf(postures[0][1])+"\n"+"Sitting: "+String.valueOf(postures[0][2])+"\n"+"Standing: "+
-                    String.valueOf(postures[0][3])+"\n"+"Upstairs: "+String.valueOf(postures[0][4])+"\n"+"Walking: "+String.valueOf(postures[0][5]));
+            probabilityText.setText("CNN WISM at Probabilities\n"+"Downstairs: "+String.format("%.2f",postures[0][0])+"\n"+"Jogging: "+
+                    String.format("%.2f",postures[0][1])+"\n"+"Sitting: "+String.format("%.2f",postures[0][2])+"\n"+"Standing: "+
+                    String.format("%.2f",postures[0][3])+"\n"+"Upstairs: "+String.format("%.2f",postures[0][4])+"\n"+"Walking: "+String.format("%.2f",postures[0][5]));
             //Remove data from arrays in preparation for next classification
             accellX.clear();
             accellY.clear();
@@ -176,15 +192,53 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
             i++;
         }
-//        arrayText.setText("aX: " + String.valueOf(theArray[0][100][0]) + "\n" + "aY " + String.valueOf(theArray[0][100][1]) + "\n"
-//                + "aZ: " + String.valueOf(theArray[0][100][2]));
+        //normalize values to be between 0-1
+//            float min1 = findMin(theArray, 0);
+//            float div1 = findMax(theArray, 0) - min1;
+//            float min2 = findMin(theArray, 1);
+//            float div2 = findMax(theArray, 1) - min2;
+//            float min3 = findMin(theArray, 2);
+//            float div3 = findMax(theArray, 2) - min3;
+//            probabilityText.setText(String.format("%.2f", min3) + "\n" + String.format("%.2f", div3));
+//            //probabilityText.setText(String.format("%.2f", theArray[0][50][2]));
+//            probabilityText.setText(String.format("%.2f", mAccelerometer.getMaximumRange()));
+//            for(int s = 0; s < 200; s++){
+//                theArray[0][s][0] = (theArray[0][s][0] - min1) / div1;
+//            }
+//            for(int s = 0; s < 200; s++){
+//                theArray[0][s][1] = (theArray[0][s][1] - min2) / div2;
+//            }
+//            for(int s = 0; s < 200; s++) {
+//                theArray[0][s][2] = (theArray[0][s][2] - min3) / div3;
+//            }
         return theArray;
     }
+
+//    private float findMax(float[][][] theArray, int index){
+//        float m = theArray[0][0][index];
+//        for (int i = 1; i < 200; i++) {
+//            if(theArray[0][i][index] > m){
+//                m = theArray[0][i][index];
+//            }
+//            //m = Math.max(m, theArray[0][i][index]);
+//        }
+//        return m;
+//    }
+//
+//    private float findMin(float[][][] theArray, int index){
+//        float m = theArray[0][0][index];
+//        for (int i = 1; i < 200; i++) {
+//            if(theArray[0][i][index] < m) {
+//                m = theArray[0][i][index];
+//            }
+//            //m = Math.min(m, theArray[0][i][index]);
+//        }
+//        return m;
+//    }
 
     //Provides the current accuracy of the sensor, OS may change it under certain
     //situations such as heavy processing loads or power saving mode
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
-
 }
