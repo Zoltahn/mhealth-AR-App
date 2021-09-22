@@ -1,27 +1,24 @@
 package com.example.myapplication;
 
-import androidx.annotation.NonNull;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.MenuItem;
+
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-
 import com.google.android.material.navigation.NavigationView;
 
-public class SettingActivity extends AppCompatActivity {
+public class CreditActivity extends AppCompatActivity {
 
-    private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
+    private DrawerLayout drawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_setting);
+        setContentView(R.layout.activity_credit);
 
         // get drawer for navigation view
         drawerLayout = findViewById(R.id.drawer);
@@ -30,21 +27,21 @@ public class SettingActivity extends AppCompatActivity {
         toggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        // Navigation Highlight
+        NavigationView navigationView = this.findViewById(R.id.navigation_view);
+        navigationView.setCheckedItem(R.id.credits_activity);
     }
 
     // Change Activity
     public void changeActivity(MenuItem menuItem) {
-        switch (menuItem.getItemId()){
-            case R.id.main_activity:
-                Intent intent = new Intent(this, MainActivity.class);
-                startActivity(intent);
-                finish();
-                break;
-            case R.id.analysis_activity:
-                intent = new Intent(this, AnalysingActivity.class);
-                startActivity(intent);
-                finish();
-                break;
+        if (menuItem.getItemId() == R.id.main_activity){
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        } else if (menuItem.getItemId() == R.id.analysis_activity){
+            Intent intent = new Intent(this, AnalysingActivity.class);
+            startActivity(intent);
+            finish();
         }
     }
 

@@ -246,7 +246,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (menuItem.getItemId() == R.id.analysis_activity){
                 Intent intent = new Intent(this, AnalysingActivity.class);
                 startActivity(intent);
-                finish();
+        } else if (menuItem.getItemId() == R.id.credits_activity) {
+            Intent intent = new Intent(this, CreditActivity.class);
+            startActivity(intent);
         }
     }
 

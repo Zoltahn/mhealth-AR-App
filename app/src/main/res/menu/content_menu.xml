@@ -26,5 +26,10 @@
             </item>
         </menu>
     </item>
+    <item
+        android:id="@+id/credits_activity"
+        android:title="Credits"
+        android:onClick="changeActivity">
+    </item>
 
 </menu>

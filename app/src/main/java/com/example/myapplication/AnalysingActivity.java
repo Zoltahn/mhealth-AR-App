@@ -223,7 +223,9 @@ public class AnalysingActivity extends AppCompatActivity implements SensorEventL
         if (menuItem.getItemId() == R.id.main_activity){
                 Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
-                finish();
+        } else if (menuItem.getItemId() == R.id.credits_activity) {
+            Intent intent = new Intent(this, CreditActivity.class);
+            startActivity(intent);
         }
     }
 
