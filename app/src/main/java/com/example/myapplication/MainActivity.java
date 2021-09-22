@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private ActionBarDrawerToggle toggle;
     private List<Float> accellX, accellY, accellZ;
     private Classifier Classifier = new Classifier();
+    private int prevPostureNum = -1;
 //    private List<Float> linAcellX, linAcellY, linAcellZ;
 //    private List<Float> gyroX, gyroY, gyroZ;
 
@@ -252,37 +253,55 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 imageView.setImageResource(R.drawable.downstairs);
                 activityText.setText("Downstairs");
                 probabilityText.setText("Probability: "+String.format("%.2f", probability));
-                if(soundSwitch) ringtone.play();
+                if(postureNum != prevPostureNum && soundSwitch == true){
+                    ringtone.play();
+                    prevPostureNum = postureNum;
+                }
                 break;
             case 1:
                 imageView.setImageResource(R.drawable.jogging);
                 activityText.setText("Jogging");
                 probabilityText.setText("Probability: "+String.format("%.2f", probability));
-                if(soundSwitch) ringtone.play();
+                if(postureNum != prevPostureNum && soundSwitch == true){
+                    ringtone.play();
+                    prevPostureNum = postureNum;
+                }
                 break;
             case 2:
                 imageView.setImageResource(R.drawable.sitting);
                 activityText.setText("Sitting");
                 probabilityText.setText("Probability: "+String.format("%.2f", probability));
-                if(soundSwitch) ringtone.play();
+                if(postureNum != prevPostureNum && soundSwitch == true){
+                    ringtone.play();
+                    prevPostureNum = postureNum;
+                }
                 break;
             case 3:
                 imageView.setImageResource(R.drawable.standing);
                 activityText.setText("Standing");
                 probabilityText.setText("Probability: "+String.format("%.2f", probability));
-                if(soundSwitch) ringtone.play();
+                if(postureNum != prevPostureNum && soundSwitch == true){
+                    ringtone.play();
+                    prevPostureNum = postureNum;
+                }
                 break;
             case 4:
                 imageView.setImageResource(R.drawable.upstairs);
                 activityText.setText("Upstairs");
                 probabilityText.setText("Probability: "+String.format("%.2f", probability));
-                if(soundSwitch) ringtone.play();
+                if(postureNum != prevPostureNum && soundSwitch == true){
+                    ringtone.play();
+                    prevPostureNum = postureNum;
+                }
                 break;
             case 5:
                 imageView.setImageResource(R.drawable.walking);
                 activityText.setText("Walking");
                 probabilityText.setText("Probability: "+String.format("%.2f", probability));
-                if(soundSwitch) ringtone.play();
+                if(postureNum != prevPostureNum && soundSwitch == true){
+                    ringtone.play();
+                    prevPostureNum = postureNum;
+                }
                 break;
         }
     }

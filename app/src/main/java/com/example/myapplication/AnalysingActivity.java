@@ -54,8 +54,6 @@ public class AnalysingActivity extends AppCompatActivity implements SensorEventL
 
     private Viewport viewport;
     private int pointsPlotted = 0;
-    Date date = new Date();
-    long time = date.getTime();
     public static int act = 1;
     private TextView sensValue, metric;
 
@@ -185,8 +183,8 @@ public class AnalysingActivity extends AppCompatActivity implements SensorEventL
         super.onResume();
         //Register event listener using SensorManager
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME);
-        //mSensorManager.registerListener(this, mLinearAccelerometer, SensorManager.SENSOR_DELAY_GAME);
-        //mSensorManager.registerListener(this, mGyroscope, SensorManager.SENSOR_DELAY_GAME);
+        mSensorManager.registerListener(this, mLinearAccelerometer, SensorManager.SENSOR_DELAY_GAME);
+        mSensorManager.registerListener(this, mGyroscope, SensorManager.SENSOR_DELAY_GAME);
 
     }
     public static void ResetData(){
@@ -196,8 +194,8 @@ public class AnalysingActivity extends AppCompatActivity implements SensorEventL
     public void onPause() {
         super.onPause();
         mSensorManager.unregisterListener(this, mAccelerometer);
-        //mSensorManager.unregisterListener(this, mLinearAccelerometer);
-        //mSensorManager.unregisterListener(this, mGyroscope);
+        mSensorManager.unregisterListener(this, mLinearAccelerometer);
+        mSensorManager.unregisterListener(this, mGyroscope);
     }
 
     public void onSensorChanged(SensorEvent event) {
@@ -228,6 +226,8 @@ public class AnalysingActivity extends AppCompatActivity implements SensorEventL
                 series1.resetData( new DataPoint[] { new DataPoint(0,0)});
                 series2.resetData( new DataPoint[] { new DataPoint(0,0)});
             }
+        }
+        if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
             accellX.add(event.values[0]);
             accellY.add(event.values[1]);
             accellZ.add(event.values[2]);
