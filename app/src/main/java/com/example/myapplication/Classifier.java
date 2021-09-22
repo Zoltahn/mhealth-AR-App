@@ -64,7 +64,7 @@ public class Classifier extends Activity{
 
     //load model into the apps assets
     private MappedByteBuffer loadModelFile() throws IOException {
-        String MODEL_ASSETS_PATH = "CNN_test_-_WISDM_ar_ns.tflite";
+        String MODEL_ASSETS_PATH = "RNN-WISDM_ar_ns.tflite";
         AssetFileDescriptor assetFileDescriptor = this.getAssets().openFd(MODEL_ASSETS_PATH);
         FileInputStream fileInputStream = new FileInputStream(assetFileDescriptor.getFileDescriptor() );
         FileChannel fileChannel = fileInputStream.getChannel();
