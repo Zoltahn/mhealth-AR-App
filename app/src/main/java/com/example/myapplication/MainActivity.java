@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private TextView frequencyText;
     private ImageView imageView;
     private Ringtone ringtone;
+    private boolean soundSwitch;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
     private List<Float> accellX, accellY, accellZ;
@@ -95,6 +97,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        // Sound Switch
+        soundSwitch = true;
 
         // Navigation Highlight
         NavigationView navigationView = this.findViewById(R.id.navigation_view);
@@ -195,37 +200,37 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 imageView.setImageResource(R.drawable.standing);
                 activityText.setText("Standing");
                 probabilityText.setText("Probability: "+probability);
-                ringtone.play();
+                if(soundSwitch) ringtone.play();
                 break;
             case 1:
                 imageView.setImageResource(R.drawable.sitting);
                 activityText.setText("Sitting");
                 probabilityText.setText("Probability: "+probability);
-                ringtone.play();
+                if(soundSwitch) ringtone.play();
                 break;
             case 2:
                 imageView.setImageResource(R.drawable.jogging);
                 activityText.setText("Jogging");
                 probabilityText.setText("Probability: "+probability);
-                ringtone.play();
+                if(soundSwitch) ringtone.play();
                 break;
             case 3:
                 imageView.setImageResource(R.drawable.walking);
                 activityText.setText("Walking");
                 probabilityText.setText("Probability: "+probability);
-                ringtone.play();
+                if(soundSwitch) ringtone.play();
                 break;
             case 4:
                 imageView.setImageResource(R.drawable.upstairs);
                 activityText.setText("Upstairs");
                 probabilityText.setText("Probability: "+probability);
-                ringtone.play();
+                if(soundSwitch) ringtone.play();
                 break;
             case 5:
                 imageView.setImageResource(R.drawable.downstairs);
                 activityText.setText("Downstairs");
                 probabilityText.setText("Probability: "+probability);
-                ringtone.play();
+                if(soundSwitch) ringtone.play();
                 break;
         }
     }
@@ -238,18 +243,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     // Change Activity
     public void changeActivity(MenuItem menuItem) {
-        switch (menuItem.getItemId()){
-            case R.id.analysis_activity:
+        if (menuItem.getItemId() == R.id.analysis_activity){
                 Intent intent = new Intent(this, AnalysingActivity.class);
                 startActivity(intent);
-                finish();
-                break;
-            case R.id.settings_activity:
-                intent = new Intent(this, SettingActivity.class);
-                startActivity(intent);
-                finish();
-                break;
+        } else if (menuItem.getItemId() == R.id.credits_activity) {
+            Intent intent = new Intent(this, CreditActivity.class);
+            startActivity(intent);
         }
+    }
+
+    public void SwitchSound(View view) {
+        CompoundButton switchButton = (CompoundButton) view;
+        soundSwitch = switchButton.isChecked();
     }
 
     @Override
