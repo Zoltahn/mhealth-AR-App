@@ -6,6 +6,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
 import android.hardware.SensorEventListener;
+import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -57,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private List<Float> accellX, accellY, accellZ;
     private Classifier Classifier = new Classifier();
     private int prevPostureNum = -1;
+    private MediaPlayer soundWalk, soundJog, soundSit, soundStand, soundLie, soundUp, soundDown;
 //    private List<Float> linAcellX, linAcellY, linAcellZ;
 //    private List<Float> gyroX, gyroY, gyroZ;
 
@@ -64,6 +66,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //sound files for activities
+        soundJog = MediaPlayer.create(this, R.raw.jogging);
+        soundSit = MediaPlayer.create(this, R.raw.sitting);
+        soundStand = MediaPlayer.create(this, R.raw.standing);
+        soundLie = MediaPlayer.create(this, R.raw.lying);
+        soundUp = MediaPlayer.create(this, R.raw.upstairs);
+        soundDown = MediaPlayer.create(this, R.raw.downstairs);
+        soundWalk = MediaPlayer.create(this, R.raw.walking);
 
         accellX = new ArrayList<>();
         accellY = new ArrayList<>();
@@ -254,7 +265,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 activityText.setText("Downstairs");
                 probabilityText.setText("Probability: "+String.format("%.2f", probability));
                 if(postureNum != prevPostureNum && soundSwitch == true){
-                    ringtone.play();
+                    if(soundSwitch) soundDown.start();
                     prevPostureNum = postureNum;
                 }
                 break;
@@ -263,7 +274,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 activityText.setText("Jogging");
                 probabilityText.setText("Probability: "+String.format("%.2f", probability));
                 if(postureNum != prevPostureNum && soundSwitch == true){
-                    ringtone.play();
+                    if(soundSwitch) soundJog.start();
                     prevPostureNum = postureNum;
                 }
                 break;
@@ -272,7 +283,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 activityText.setText("Sitting");
                 probabilityText.setText("Probability: "+String.format("%.2f", probability));
                 if(postureNum != prevPostureNum && soundSwitch == true){
-                    ringtone.play();
+                    if(soundSwitch) soundSit.start();
                     prevPostureNum = postureNum;
                 }
                 break;
@@ -281,7 +292,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 activityText.setText("Standing");
                 probabilityText.setText("Probability: "+String.format("%.2f", probability));
                 if(postureNum != prevPostureNum && soundSwitch == true){
-                    ringtone.play();
+                    if(soundSwitch) soundStand.start();
                     prevPostureNum = postureNum;
                 }
                 break;
@@ -290,7 +301,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 activityText.setText("Upstairs");
                 probabilityText.setText("Probability: "+String.format("%.2f", probability));
                 if(postureNum != prevPostureNum && soundSwitch == true){
-                    ringtone.play();
+                    if(soundSwitch) soundUp.start();
                     prevPostureNum = postureNum;
                 }
                 break;
@@ -299,7 +310,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 activityText.setText("Walking");
                 probabilityText.setText("Probability: "+String.format("%.2f", probability));
                 if(postureNum != prevPostureNum && soundSwitch == true){
-                    ringtone.play();
+                    if(soundSwitch) soundWalk.start();
                     prevPostureNum = postureNum;
                 }
                 break;
