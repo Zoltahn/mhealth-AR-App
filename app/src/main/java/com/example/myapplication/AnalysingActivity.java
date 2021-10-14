@@ -24,15 +24,23 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
 import android.hardware.SensorEventListener;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.tensorflow.lite.Interpreter;
 
+import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -56,6 +64,13 @@ public class AnalysingActivity extends AppCompatActivity implements SensorEventL
     private int pointsPlotted = 0;
     public static int act = 1;
     private TextView sensValue, metric;
+    public static String file = "log.txt";
+    private int count = 0;
+
+    String logged;
+
+    ArrayList<String> logs = new ArrayList<String>();
+
 
     //initialise line series according to tri-axial data
     LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(new DataPoint[]  {
@@ -159,7 +174,69 @@ public class AnalysingActivity extends AppCompatActivity implements SensorEventL
             }
         });
     }
+    //for loading txt file in app
+    /*
+    public void load(String f ){
+        FileInputStream fis = null;
 
+        try {
+            fis = openFileInput(f);
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader br = new BufferedReader(isr);
+            StringBuilder sb = new StringBuilder();
+            String txt;
+            while((txt = br.readLine())!= null){
+                sb.append(txt).append("\n");
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally{
+            if(fis!= null){
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    /*
+    public void save(){
+        FileOutputStream fos = null;
+        String s = probabilityText.getText().toString();
+        try {
+            logs.add(s);
+            String z = String.valueOf(logs);
+            if (logs.size() > 10){
+                for (String x : logs)
+                {
+                    logged += s + "\t";
+                }
+                logs.clear();
+                logged = " ";
+                fos = openFileOutput(file,MODE_PRIVATE);
+                fos.write("\n".getBytes());
+                fos.write(z.getBytes());
+
+            };
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            if (fos != null){
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    */
     //load model into the apps assets
     private MappedByteBuffer loadModelFile() throws IOException {
         String MODEL_ASSETS_PATH = "CNN_test_-_WISDM_ar_ns.tflite";
@@ -309,9 +386,13 @@ public class AnalysingActivity extends AppCompatActivity implements SensorEventL
                     String.format("%.2f",postures[0][3])+"\n"+"Upstairs: "+String.format("%.2f",postures[0][4])+"\n"+"Walking: "+String.format("%.2f",postures[0][5]));
 
             //Remove data from arrays in preparation for next classification
+
             accellX.clear();
             accellY.clear();
             accellZ.clear();
+
+
+
 //            linAcellX.clear();
 //            linAcellY.clear();
 //            linAcellZ.clear();

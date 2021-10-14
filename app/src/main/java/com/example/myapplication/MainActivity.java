@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.hardware.Sensor;
@@ -26,14 +27,18 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import org.tensorflow.lite.Interpreter;
@@ -58,9 +63,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private List<Float> accellX, accellY, accellZ;
     private Classifier Classifier = new Classifier();
     private int prevPostureNum = -1;
+    public static String file = "log.txt";
+    private int count = 0;
+    String Predictions;
+    String logged;
+
+    ArrayList<String> logs = new ArrayList<String>();
+
+    private int counter = 0;
     private MediaPlayer soundWalk, soundJog, soundSit, soundStand, soundLie, soundUp, soundDown;
+    private String File = "log.txt";
 //    private List<Float> linAcellX, linAcellY, linAcellZ;
 //    private List<Float> gyroX, gyroY, gyroZ;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -191,7 +207,39 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 //            }
 //        }
     }
+    public void save(){
+        FileOutputStream fos = null;
+        String s = Predictions;
+        try {
+            logs.add(s);
+            String z = String.valueOf(logs);
+            if (logs.size() > 10){
+                for (String x : logs)
+                {
+                    logged += s + "\n";
+                }
+                logs.clear();
+                logged = " ";
+                fos = openFileOutput(file,MODE_PRIVATE);
+                fos.write("\n".getBytes());
+                fos.write(z.getBytes());
 
+            };
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            if (fos != null){
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
     public void PredictActivity() {
         //Runs prediction when 200 samples are collected for each sensor
         if (accellX.size() == sampleSize) {
@@ -225,6 +273,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             displayPrediction(postureNum, max);
 
+
+            Predictions = "Probabilities:\n"+"Downstairs: "+String.format("%.2f",postures[0][0])+"\n"+"Jogging: "+
+                    String.format("%.2f",postures[0][1])+"\n"+"Sitting: "+String.format("%.2f",postures[0][2])+"\n"+"Standing: "+
+                    String.format("%.2f",postures[0][3])+"\n"+"Upstairs: "+String.format("%.2f",postures[0][4])+"\n"+"Walking: "+String.format("%.2f",postures[0][5]);
+            save();
             //Remove data from arrays in preparation for next classification
             accellX.clear();
             accellY.clear();
@@ -259,6 +312,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     //Mock classifier for UI development purposes
     public void displayPrediction(int postureNum, float probability){
+
         switch(postureNum){
             case 0:
                 imageView.setImageResource(R.drawable.downstairs);
@@ -268,6 +322,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     if(soundSwitch) soundDown.start();
                     prevPostureNum = postureNum;
                 }
+
                 break;
             case 1:
                 imageView.setImageResource(R.drawable.jogging);
@@ -277,6 +332,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     if(soundSwitch) soundJog.start();
                     prevPostureNum = postureNum;
                 }
+
                 break;
             case 2:
                 imageView.setImageResource(R.drawable.sitting);
@@ -286,6 +342,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     if(soundSwitch) soundSit.start();
                     prevPostureNum = postureNum;
                 }
+
                 break;
             case 3:
                 imageView.setImageResource(R.drawable.standing);
@@ -295,19 +352,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     if(soundSwitch) soundStand.start();
                     prevPostureNum = postureNum;
                 }
+
                 break;
             case 4:
                 imageView.setImageResource(R.drawable.upstairs);
-                activityText.setText("Upstairs");
                 probabilityText.setText("Probability: "+String.format("%.2f", probability));
                 if(postureNum != prevPostureNum && soundSwitch == true){
                     if(soundSwitch) soundUp.start();
                     prevPostureNum = postureNum;
                 }
+
                 break;
             case 5:
                 imageView.setImageResource(R.drawable.walking);
-                activityText.setText("Walking");
                 probabilityText.setText("Probability: "+String.format("%.2f", probability));
                 if(postureNum != prevPostureNum && soundSwitch == true){
                     if(soundSwitch) soundWalk.start();
